@@ -163,6 +163,7 @@ void q_reverse(queue_t *q)
     q->tail = cur;
 }
 
+
 /*
  * Sort elements of queue in ascending order
  * No effect if q is NULL or empty. In addition, if q has only one
@@ -172,110 +173,68 @@ void q_sort(queue_t *q)
 {
     if (!q || q->size <= 1)
         return;
-    // printf("size: %d\n", q->size);
-    // list_ele_t *a = q->head;
-    // int sum = 0;
-    // puts("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    // for (int qq=0; a && qq<q->size; ++qq) {
-    //     // printf("%s,  ", a->value);
-    //     if (a->next && strcmp(a->value, a->next->value))    ++sum;
-    //     a = a->next;
-    // }
-    // printf("SUM; %d\n", sum);
+    q->tail = q->head = merge_sort(q->head);
+    while (q->tail->next) {
+        q->tail = q->tail->next;
+    }
+}
 
-    for (int k = 1; k < q->size; k *= 2) {
-        list_ele_t **cursor = &(q->head);  // storing point
-        list_ele_t *point = q->head;       // processing point
-        list_ele_t *left = point, *right = point;
-        // printf("K = %d\n", k);
-        int t = k;
-        while (t && right) {
-            --t;
-            right = right->next;
-        }
-        point = right;
-        t = k;
-        while (t && point) {
-            --t;
-            point = point->next;
-        }
-        while (right) {
-            int left_size = k;
-            // puts("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            // if (point)
-            //     printf("Point: %s\n", point->value);
-            // else printf("Point: NULL\n");
-            // if (left)
-            //     printf("Left : %s\n", left->value);
-            // else printf("LEFT : NULL\n");
-            // if (right)
-            //     printf("Right: %s\n", right->value);
-            // else printf("Right: NULL\n");
-            while (left_size && right != point) {
-                // if (str_natural_cmp(left->value, right->value)*
-                // strcasecmp(left->value, right->value) < 0) {
-                //     printf("%s vs. \n%s\n", left->value, right->value);
-                //     printf("My: %d\n", str_natural_cmp(left->value,
-                //     right->value));
-                //     printf("judge: %d\n", strcasecmp(left->value,
-                //     right->value));
-                // }
-                if (str_natural_cmp(left->value, right->value) >= 0) {
-                    *cursor = right;
-                    right = right->next;
-                    cursor = &((*cursor)->next);
-                } else {
-                    *cursor = left;
-                    left = left->next;
-                    cursor = &((*cursor)->next);
-                    --left_size;
-                }
-            }
-            while (left_size) {
-                *cursor = left;
-                q->tail = left;
-                left = left->next;
-                cursor = &((*cursor)->next);
-                --left_size;
-            }
-            while (right != point) {
-                *cursor = right;
-                q->tail = right;
-                right = right->next;
-                cursor = &((*cursor)->next);
-            }
-            *cursor = point;
-            left = right = point;
-            t = k;
-            while (t && right) {
-                --t;
-                right = right->next;
-            }
-            point = right;
-            t = k;
-            while (t && point) {
-                --t;
-                point = point->next;
-            }
-            // a = q->head;
-            // for (int qq=0; qq<q->size && a; ++qq) {
-            //     printf("%s,  ", a->value);
-            //     a = a->next;
-            // }
-            // if (q->tail)
-            //     printf("tail: %s\n", q->tail->value);
-            // else printf("tail: NULL\n");
-            // if (point)
-            //     printf("Point: %s\n", point->value);
-            // else printf("Point: NULL\n");
-            // if (left)
-            //     printf("Left : %s\n", left->value);
-            // else printf("LEFT : NULL\n");
-            // if (right)
-            //     printf("Right: %s\n", right->value);
-            // else printf("Right: NULL\n");
+/*
+ * Merge sort for lined list. This function will use divide & conquer
+ * strategy to solve the sorting proble.
+ */
+list_ele_t *merge_sort(list_ele_t *head)
+{
+    if (!head || !head->next)
+        return head;
+    list_ele_t *fast = head->next;
+    list_ele_t *slow = head;
+
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    fast = slow->next;
+    slow->next = NULL;
+
+    head = merge_sort(head);
+    fast = merge_sort(fast);
+
+    return merge(head, fast);
+}
+
+/*
+ * Merge 2 linked list into 1 linked list in ascending order.
+ */
+list_ele_t *merge(list_ele_t *p1, list_ele_t *p2)
+{
+    list_ele_t *head = NULL;
+    list_ele_t **cursor = &head;
+
+    while (p1 && p2) {
+        if (str_natural_cmp(p1->value, p2->value) >= 0) {
+            *cursor = p2;
+            p2 = p2->next;
+            cursor = &((*cursor)->next);
+        } else {
+            *cursor = p1;
+            p1 = p1->next;
+            cursor = &((*cursor)->next);
         }
     }
+    while (p1) {
+        *cursor = p1;
+        p1 = p1->next;
+        cursor = &((*cursor)->next);
+    }
+    while (p2) {
+        *cursor = p2;
+        p2 = p2->next;
+        cursor = &((*cursor)->next);
+    }
+    *cursor = NULL;
+    return head;
 }
 
 /*

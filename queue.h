@@ -93,6 +93,17 @@ void q_reverse(queue_t *q);
 void q_sort(queue_t *q);
 
 /*
+ * Merge sort for lined list. This function will use divide & conquer
+ * strategy to solve the sorting proble.
+ */
+list_ele_t *merge_sort(list_ele_t *head);
+
+/*
+ * Merge 2 linked list into 1 linked list in ascending order.
+ */
+list_ele_t *merge(list_ele_t *list1, list_ele_t *list2);
+
+/*
  * Compare two character strings according to their natural ordering.
  * Return value is greater than, equal to, or less than zero, accordingly
  * as the string pointed to by sl is greater than. equal to, or less than
