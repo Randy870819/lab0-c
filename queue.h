@@ -24,11 +24,8 @@ typedef struct ELE {
 
 /* Queue structure */
 typedef struct {
-    list_ele_t *head; /* Linked list of elements */
-    /* TODO: You will need to add more fields to this structure
-     *        to efficiently implement q_size and q_insert_tail.
-     */
-    /* TODO: Remove the above comment when you are about to implement. */
+    list_ele_t *head, *tail; /* Linked list of elements */
+    int size;                /* Memorizing the size of queue */
 } queue_t;
 
 /* Operations on queue */
@@ -94,5 +91,13 @@ void q_reverse(queue_t *q);
  * element, do nothing.
  */
 void q_sort(queue_t *q);
+
+/*
+ * Compare two character strings according to their natural ordering.
+ * Return value is greater than, equal to, or less than zero, accordingly
+ * as the string pointed to by sl is greater than. equal to, or less than
+ * the string pointed to by s2.
+ */
+int str_natural_cmp(const char *s1, const char *s2);
 
 #endif /* LAB0_QUEUE_H */
