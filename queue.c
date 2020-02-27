@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h> /* strcasecmp */
 
 #include "harness.h"
 #include "queue.h"
@@ -61,6 +60,7 @@ bool q_insert_head(queue_t *q, char *s)
     *(newh->value + strlen(s)) = '\0';
     newh->next = q->head;
     q->head = newh;
+    // Insert to empty queue, we have to update both head and tail pointer.
     if (++(q->size) == 1) {
         q->tail = newh;
     }
@@ -94,6 +94,7 @@ bool q_insert_tail(queue_t *q, char *s)
     if (q->tail)
         q->tail->next = newh;
     q->tail = newh;
+    // Insert to empty queue, we have to update both head and tail pointer.
     if (++(q->size) == 1) {
         q->head = newh;
     }
@@ -122,6 +123,8 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
         free(tmp->value);
     }
     free(tmp);
+    // Remove element from queue with size 1,
+    // we have to update both head and tail pointer.
     if (--(q->size) == 0) {
         q->head = q->tail = NULL;
     }
@@ -174,6 +177,8 @@ void q_sort(queue_t *q)
     if (!q || q->size <= 1)
         return;
     q->tail = q->head = merge_sort(q->head);
+    // After merge sort, the pointer q->tail would no longer point
+    // to the tail of queue anymore.
     while (q->tail->next) {
         q->tail = q->tail->next;
     }
@@ -182,6 +187,7 @@ void q_sort(queue_t *q)
 /*
  * Merge sort for lined list. This function will use divide & conquer
  * strategy to solve the sorting proble.
+ * Return value: a linked list.
  */
 list_ele_t *merge_sort(list_ele_t *head)
 {
@@ -189,15 +195,15 @@ list_ele_t *merge_sort(list_ele_t *head)
         return head;
     list_ele_t *fast = head->next;
     list_ele_t *slow = head;
-
+    // Use the concept of "Tortoise and Hare" help us find the cutting point.
     while (fast && fast->next) {
         slow = slow->next;
         fast = fast->next->next;
     }
-
+    // Redirect the pointer to the right partition and split the given list.
     fast = slow->next;
     slow->next = NULL;
-
+    // Recursive call to sort the sub-lists.
     head = merge_sort(head);
     fast = merge_sort(fast);
 
@@ -211,7 +217,7 @@ list_ele_t *merge(list_ele_t *p1, list_ele_t *p2)
 {
     list_ele_t *head = NULL;
     list_ele_t **cursor = &head;
-
+    // Merge 2 list according to their natural ordering.
     while (p1 && p2) {
         if (str_natural_cmp(p1->value, p2->value) >= 0) {
             *cursor = p2;
@@ -223,17 +229,12 @@ list_ele_t *merge(list_ele_t *p1, list_ele_t *p2)
             cursor = &((*cursor)->next);
         }
     }
-    while (p1) {
+    // Append the last remaining list to the end of merged list.
+    if (p1) {
         *cursor = p1;
-        p1 = p1->next;
-        cursor = &((*cursor)->next);
-    }
-    while (p2) {
+    } else {
         *cursor = p2;
-        p2 = p2->next;
-        cursor = &((*cursor)->next);
     }
-    *cursor = NULL;
     return head;
 }
 
@@ -245,12 +246,12 @@ list_ele_t *merge(list_ele_t *p1, list_ele_t *p2)
  */
 int str_natural_cmp(const char *s1, const char *s2)
 {
+    // Skip the same prefix of 2 given string
+    // After leaving while loop, either pointer s1 and s2 would point
+    // to the first distinct character or both of them point to '\0'.
     while (*s1 != '\0' && *s2 != '\0' && *s1 == *s2) {
-        // if (*s1 != *s2)  return (*s1 > *s2) * (1) + (*s1 < *s2) * (-1);
         ++s1, ++s2;
     }
+    // Consider their natural ordering (also cover the case of eqivalence).
     return (*s1 > *s2) * (1) + (*s1 < *s2) * (-1);
-    // return ((*s1=='\0') * (-1) + (*s2=='\0') * (1));
-    // cover (*s1=='\0' && *s2=='\0') which means 2 string are the same.
-    // return strcasecmp(s1, s2);
 }
