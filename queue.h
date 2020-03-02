@@ -104,11 +104,11 @@ list_ele_t *merge_sort(list_ele_t *head);
 list_ele_t *merge(list_ele_t *list1, list_ele_t *list2);
 
 /*
- * Compare two character strings according to their natural ordering.
+ * Compare two character strings according to their Lexicographical order.
  * Return value is greater than, equal to, or less than zero, accordingly
  * as the string pointed to by sl is greater than. equal to, or less than
  * the string pointed to by s2.
  */
-int str_natural_cmp(const char *s1, const char *s2);
+int str_cmp(const char *s1, const char *s2);
 
 #endif /* LAB0_QUEUE_H */

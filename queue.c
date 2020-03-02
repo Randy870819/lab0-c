@@ -217,9 +217,9 @@ list_ele_t *merge(list_ele_t *p1, list_ele_t *p2)
 {
     list_ele_t *head = NULL;
     list_ele_t **cursor = &head;
-    // Merge 2 list according to their natural ordering.
+    // Merge 2 list according to their Lexicographical order.
     while (p1 && p2) {
-        if (str_natural_cmp(p1->value, p2->value) >= 0) {
+        if (str_cmp(p1->value, p2->value) >= 0) {
             *cursor = p2;
             p2 = p2->next;
             cursor = &((*cursor)->next);
@@ -239,12 +239,12 @@ list_ele_t *merge(list_ele_t *p1, list_ele_t *p2)
 }
 
 /*
- * Compare two character strings according to their natural ordering.
+ * Compare two character strings according to their Lexicographical order.
  * Return value is greater than, equal to, or less than zero, accordingly
  * as the string pointed to by sl is greater than. equal to, or less than
  * the string pointed to by s2.
  */
-int str_natural_cmp(const char *s1, const char *s2)
+int str_cmp(const char *s1, const char *s2)
 {
     // Skip the same prefix of 2 given string
     // After leaving while loop, either pointer s1 and s2 would point
@@ -252,6 +252,6 @@ int str_natural_cmp(const char *s1, const char *s2)
     while (*s1 != '\0' && *s2 != '\0' && *s1 == *s2) {
         ++s1, ++s2;
     }
-    // Consider their natural ordering (also cover the case of eqivalence).
+    // Consider their Lexicographical order (also cover the case of eqivalence).
     return (*s1 > *s2) * (1) + (*s1 < *s2) * (-1);
 }
